@@ -38,7 +38,7 @@ This project is built with:
 - Vite
 - TypeScript
 - React
-- shadcn-ui
+- shadcn
 - Tailwind CSS
 
 ## Deployment

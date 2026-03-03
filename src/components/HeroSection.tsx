@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   const scrollToSlideshow = () => {
@@ -32,8 +33,8 @@ const HeroSection = () => {
         <p className="max-w-xl text-lg font-light text-muted-foreground sm:text-xl">
           The Soul of Dance, The Heart of Hustle
         </p>
-        <Button variant="hero" size="lg" className="mt-4 px-10 py-6 text-lg">
-          Register Here
+        <Button asChild variant="hero" size="lg" className="mt-4 px-10 py-6 text-lg">
+          <Link to="/guidelines">Register Here</Link>
         </Button>
       </div>
 
