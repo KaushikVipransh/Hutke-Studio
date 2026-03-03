@@ -1,4 +1,3 @@
-import heroBg from "@/assets/hero-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
@@ -9,17 +8,23 @@ const HeroSection = () => {
 
   return (
     <section className="relative flex h-screen w-full items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBg})` }}
-      />
+      {/* Background video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover bg-black"
+      >
+        <source src="/hero-bg.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-background/70" />
+      <div className="absolute inset-0 bg-black/50" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
-        <h1 className="font-display text-6xl tracking-wider text-foreground text-glow sm:text-7xl md:text-8xl lg:text-9xl">
+        <h1 className="font-display text-4xl tracking-wider text-foreground text-glow sm:text-6xl md:text-8xl lg:text-9xl">
           Hutke Dance
           <br />
           Championship
