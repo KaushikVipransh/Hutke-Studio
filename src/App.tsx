@@ -12,6 +12,7 @@ import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

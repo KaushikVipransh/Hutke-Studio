@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const slides = [
-  { url: "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=1200&h=600&fit=crop", alt: "Dance performance 1" },
-  { url: "https://images.unsplash.com/photo-1547153760-18fc86c1b3e4?w=1200&h=600&fit=crop", alt: "Dance performance 2" },
-  { url: "https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=1200&h=600&fit=crop", alt: "Dance performance 3" },
-  { url: "https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=1200&h=600&fit=crop", alt: "Dance performance 4" },
-  { url: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=1200&h=600&fit=crop", alt: "Dance performance 5" },
+  { url: "/images/pic1.webp", alt: "Dance performance 1" },
+  { url: "/images/pic2.webp", alt: "Dance performance 2" },
+  { url: "/images/pic3.webp", alt: "Dance performance 3" },
+  { url: "/images/pic4.webp", alt: "Dance performance 4" },
+  { url: "/images/pic5.webp", alt: "Dance performance 5" },
+  { url: "/images/pic6.webp", alt: "Dance performance 6" },
+  { url: "/images/pic7.webp", alt: "Dance performance 7" },
 ];
 
 const Slideshow = () => {
@@ -29,7 +31,7 @@ const Slideshow = () => {
     <section id="slideshow" className="bg-background py-16 sm:py-24">
       <div className="mx-auto max-w-5xl px-4">
         <h2 className="mb-12 text-center font-display text-4xl tracking-wider text-foreground sm:text-5xl">
-          Previous Editions
+          HDC 2024 Highlights
         </h2>
 
         <div className="relative overflow-hidden rounded-lg">

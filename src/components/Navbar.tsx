@@ -28,6 +28,19 @@ const Navbar = () => {
             Hutke Dance Studio
           </span>
         </Link>
+
+        <div className="flex items-center gap-4">
+          <a
+            href="#about-hdc"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("about-hdc")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="text-m font-medium uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary"
+          >
+            About HDC
+          </a>
+        </div>
       </div>
     </nav>
   );
