@@ -35,11 +35,11 @@ You need to have Node.js and npm (or yarn/pnpm) installed on your machine.
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn
-- Tailwind CSS
+- Vite.
+- TypeScript.
+- React.
+- shadcn.
+- Tailwind CSS.
 
 ## Deployment
 
