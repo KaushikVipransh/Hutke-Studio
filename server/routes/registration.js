@@ -1,6 +1,7 @@
 import express from 'express';
-const router = express.Router();
 import Team from '../models/Team.js';
+
+const router = express.Router();
 
 router.route('/register')
   .post(async (req, res) => {
@@ -27,6 +28,9 @@ router.route('/register')
     }
   })
   .all((req, res) => {
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
     console.log(`[Registration] Method Not Allowed: ${req.method} on /register`);
     res.setHeader('Allow', 'POST');
     res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });

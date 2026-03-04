@@ -32,6 +32,9 @@ router.route('/login')
     }
   })
   .all((req, res) => {
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
     console.log(`[Auth] Method Not Allowed: ${req.method} on /login`);
     res.setHeader('Allow', 'POST');
     res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });
