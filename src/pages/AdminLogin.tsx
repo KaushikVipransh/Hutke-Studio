@@ -26,13 +26,22 @@ const AdminLogin = () => {
         navigate("/admin");
       }
     } catch (error: any) {
-      let errorMessage = "An unexpected error occurred";
-      
+      let errorMessage = "An unexpected error occurred.";
+
       if (error.response) {
-        // Server responded with a status code (400, 401, 500)
-        errorMessage = error.response.data?.message || "Invalid credentials";
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx.
+        console.error("Login failed. Server responded with:", error.response.data);
+
+        // Vercel might return an HTML page for server errors.
+        if (typeof error.response.data === 'string' && error.response.data.toLowerCase().includes('<html>')) {
+          errorMessage = "Server error. Please check the backend logs on Vercel.";
+        } else {
+          // Use the error message from the backend if available.
+          errorMessage = error.response.data?.message || "Invalid username or password.";
+        }
       } else if (error.request) {
-        // Request was made but no response received (Server is down)
+        // The request was made but no response was received.
         errorMessage = "Cannot connect to server. Please check your internet connection or try again later.";
       }
 

@@ -67,6 +67,7 @@ const AdminDashboard = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | "ALL">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -81,15 +82,24 @@ const AdminDashboard = () => {
           id: item._id,
         }));
         setSubmissions(formattedData);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch submissions:", error);
+        toast({
+          variant: "destructive",
+          title: "Failed to load data",
+          description: error.response?.data?.message || "Could not connect to the server.",
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchSubmissions();
-  }, []);
+  }, [toast]);
 
   // 4. Function for API call to update status
   const handleStatusUpdate = async (id: string, newStatus: SubmissionStatus) => {
+    const originalSubmissions = [...submissions];
+
     // Optimistic UI Update
     setSubmissions((prev) =>
       prev.map((sub) => (sub.id === id ? { ...sub, status: newStatus } : sub))
@@ -97,9 +107,21 @@ const AdminDashboard = () => {
 
     try {
       await api.patch(`/admin/submissions/${id}`, { status: newStatus });
-    } catch (error) {
+      toast({
+        title: "Status Updated",
+        description: `Team status changed to ${newStatus}.`,
+      });
+    } catch (error: any) {
       console.error("Failed to update status:", error);
-      // Ideally, revert the state here if the API call fails
+      // Revert the state on API call failure
+      setSubmissions(originalSubmissions);
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description:
+          error.response?.data?.message ||
+          "The status could not be updated. Please try again.",
+      });
     }
   };
 
@@ -278,7 +300,13 @@ const AdminDashboard = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredSubmissions.length > 0 ? (
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                        Loading submissions...
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredSubmissions.length > 0 ? (
                     filteredSubmissions.map((sub) => (
                       <TableRow key={sub.id}>
                         <TableCell className="font-medium">{sub.teamName}</TableCell>
@@ -385,7 +413,7 @@ const AdminDashboard = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                      <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
                         No submissions match the current filters.
                       </TableCell>
                     </TableRow>

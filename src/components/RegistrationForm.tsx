@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import api from "@/lib/api";
 
 // Define division constants to ensure consistency with backend
 const DIVISIONS = {
@@ -53,6 +54,7 @@ const formSchema = z
   });
 
 const RegistrationForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,6 +74,7 @@ const RegistrationForm = () => {
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     // Clean up the payload to remove irrelevant conditional fields before submission
     const payload = { ...values };
     if (payload.division === DIVISIONS.CREW) {
@@ -79,34 +82,32 @@ const RegistrationForm = () => {
     }
 
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/register`;
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.message || "Registration failed");
+      await api.post("/register", payload);
 
       toast({
         title: "Registration Successful",
         description: "We will review your submission and get back to you soon.",
-        action: (
-          <ToastAction altText="OK" onClick={() => window.location.reload()}>
-            OK
-          </ToastAction>
-        ),
       });
       form.reset();
     } catch (error: any) {
+      let errorMessage = "An unexpected error occurred.";
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error("Registration failed. Server responded with:", error.response.data);
+        errorMessage = error.response.data?.message || "Something went wrong on the server.";
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "Cannot connect to the server. Please check your connection.";
+      }
+
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message || "Something went wrong. Please try again.",
+        title: "Registration Failed",
+        description: errorMessage,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -250,8 +251,8 @@ const RegistrationForm = () => {
               )}
             />
 
-            <Button type="submit" size="lg" className="w-full text-lg">
-              Submit for Review
+            <Button type="submit" size="lg" className="w-full text-lg" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit for Review"}
             </Button>
           </form>
         </Form>
