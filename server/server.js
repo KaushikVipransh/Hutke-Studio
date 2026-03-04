@@ -37,20 +37,18 @@ app.use('/api', registrationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 
-const startServer = async () => {
-  try {
-    // Connect to MongoDB with a timeout setting
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s if cannot connect
-    });
-    console.log('MongoDB Connected');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Failed to connect to MongoDB', error);
-    process.exit(1);
-  }
-};
+// Connect to MongoDB (Mongoose handles buffering, so we can connect at top level)
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000
+}).then(() => console.log('MongoDB Connected'))
+  .catch(err => console.error('MongoDB Connection Error:', err));
 
-startServer();
+// Export the app for Vercel
+export default app;
+
+// Only listen on port if running locally (Vercel sets process.env.VERCEL)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
