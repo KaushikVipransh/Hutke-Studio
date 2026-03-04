@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 import registrationRoutes from './routes/registration.js';
 import adminRoutes from './routes/adminRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 console.log("Starting server...");
 dotenv.config();
@@ -38,6 +41,23 @@ app.get("/api/health", (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', registrationRoutes);
+
+// Serve static files (Frontend)
+// Only serve static files locally. Vercel handles this via CDN.
+if (!process.env.VERCEL) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  // Adjust '../client/dist' to match your frontend build folder (e.g., '../build', '../dist')
+  app.use(express.static(path.join(__dirname, '../dist')));
+  app.get(/(.*)/, (req, res) => {
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send('Frontend build not found. Please run "npm run build" in the root directory.');
+    }
+  });
+}
 
 // Connect to MongoDB (Mongoose handles buffering, so we can connect at top level)
 mongoose.connect(process.env.MONGO_URI, {
