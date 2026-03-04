@@ -33,7 +33,7 @@ const AdminLogin = () => {
         errorMessage = error.response.data?.message || "Invalid credentials";
       } else if (error.request) {
         // Request was made but no response received (Server is down)
-        errorMessage = "Cannot connect to server. Is the backend running on port 5000?";
+        errorMessage = "Cannot connect to server. Please check your internet connection or try again later.";
       }
 
       toast({
