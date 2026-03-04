@@ -31,4 +31,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Handle Method Not Allowed for /login
+router.all('/login', (req, res) => {
+  console.log(`[Auth] Method Not Allowed: ${req.method} on /login`);
+  res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });
+});
+
 export default router;

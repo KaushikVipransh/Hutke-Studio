@@ -3,6 +3,7 @@ const router = express.Router();
 import Team from '../models/Team.js';
 
 router.post('/register', async (req, res) => {
+  console.log(`[Registration] POST request received for: ${req.body.teamName || 'Unknown Team'}`);
   try {
     // Normalize division to match Mongoose Enum exactly (handle lowercase/mismatch)
     if (req.body.division) {
@@ -23,6 +24,12 @@ router.post('/register', async (req, res) => {
     console.error("Request Body:", req.body);
     res.status(400).json({ message: error.message });
   }
+});
+
+// Handle Method Not Allowed for /register
+router.all('/register', (req, res) => {
+  console.log(`[Registration] Method Not Allowed: ${req.method} on /register`);
+  res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });
 });
 
 export default router;

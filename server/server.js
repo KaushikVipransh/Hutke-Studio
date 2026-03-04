@@ -24,8 +24,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: true, // Allow all origins (reflects request origin)
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+}));
 app.use(express.json());
+
+// Debug Logging: Log every incoming request
+app.use((req, res, next) => {
+  console.log(`[Server] ${req.method} ${req.url}`);
+  next();
+});
 
 // Monitor database connection status
 mongoose.connection.on('connected', () => console.log('Mongoose connected to DB Cluster'));
