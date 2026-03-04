@@ -6,6 +6,7 @@ import registrationRoutes from './routes/registration.js';
 import adminRoutes from './routes/adminRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
+console.log("Starting server...");
 dotenv.config();
 
 if (!process.env.MONGO_URI) {
