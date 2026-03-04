@@ -5,36 +5,36 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
-  console.log(`[Auth] Login attempt for username: ${req.body.username}`);
-  const { username, password } = req.body;
+router.route('/login')
+  .post(async (req, res) => {
+    console.log(`[Auth] Login attempt for username: ${req.body.username}`);
+    const { username, password } = req.body;
 
-  try {
-    const user = await User.findOne({ username });
-    if (!user) {
-      console.log(`[Login Failed] Username '${username}' not found in database.`);
-      return res.status(400).json({ message: 'Invalid username or password' });
+    try {
+      const user = await User.findOne({ username });
+      if (!user) {
+        console.log(`[Login Failed] Username '${username}' not found in database.`);
+        return res.status(400).json({ message: 'Invalid username or password' });
+      }
+
+      const validPass = await bcrypt.compare(password, user.password);
+      if (!validPass) {
+        console.log(`[Login Failed] Incorrect password for user '${username}'.`);
+        return res.status(400).json({ message: 'Invalid username or password' });
+      }
+
+      // Create and assign a token
+      const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      res.json({ token, role: user.role });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: 'Server Error' });
     }
-
-    const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) {
-      console.log(`[Login Failed] Incorrect password for user '${username}'.`);
-      return res.status(400).json({ message: 'Invalid username or password' });
-    }
-
-    // Create and assign a token
-    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.json({ token, role: user.role });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
-
-// Handle Method Not Allowed for /login
-router.all('/login', (req, res) => {
-  console.log(`[Auth] Method Not Allowed: ${req.method} on /login`);
-  res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });
-});
+  })
+  .all((req, res) => {
+    console.log(`[Auth] Method Not Allowed: ${req.method} on /login`);
+    res.setHeader('Allow', 'POST');
+    res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });
+  });
 
 export default router;
