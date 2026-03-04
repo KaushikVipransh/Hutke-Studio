@@ -5,8 +5,7 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-router.route('/login')
-  .post(async (req, res) => {
+router.post('/login', async (req, res) => {
     console.log(`[Auth] Login attempt for username: ${req.body.username}`);
     const { username, password } = req.body;
 
@@ -30,14 +29,6 @@ router.route('/login')
       console.error("Login error:", error);
       res.status(500).json({ message: 'Server Error' });
     }
-  })
-  .all((req, res) => {
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(200);
-    }
-    console.log(`[Auth] Method Not Allowed: ${req.method} on /login`);
-    res.setHeader('Allow', 'POST');
-    res.status(405).json({ message: `Method ${req.method} not allowed. Use POST.` });
   });
 
 export default router;
