@@ -6,6 +6,7 @@ import User from '../models/User.js';
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
+  console.log(`[Auth] Login attempt for username: ${req.body.username}`);
   const { username, password } = req.body;
 
   try {

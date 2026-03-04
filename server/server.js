@@ -34,9 +34,9 @@ app.get("/api/health", (req, res) => {
 });
 
 // Routes
-app.use('/api', registrationRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api', registrationRoutes);
 
 // Connect to MongoDB (Mongoose handles buffering, so we can connect at top level)
 mongoose.connect(process.env.MONGO_URI, {
