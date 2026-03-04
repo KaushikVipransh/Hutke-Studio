@@ -95,7 +95,13 @@ const RegistrationForm = () => {
       if (error.response) {
         // The request was made and the server responded with a status code
         console.error("Registration failed. Server responded with:", error.response.data);
-        errorMessage = error.response.data?.message || "Something went wrong on the server.";
+        
+        // Check if the response is an HTML error page from Vercel (common for 500/404 errors)
+        if (typeof error.response.data === 'string' && error.response.data.toLowerCase().includes('<!doctype html>')) {
+          errorMessage = "Server Error. Please check the Vercel Function logs.";
+        } else {
+          errorMessage = error.response.data?.message || "Something went wrong on the server.";
+        }
       } else if (error.request) {
         // The request was made but no response was received
         errorMessage = "Cannot connect to the server. Please check your connection.";
