@@ -1,5 +1,3 @@
-import app from '../server/server.js';
-export default app;
+import app from '../server/server.js'; // Adjust the path if server.js is in a different folder
 
-const app = express();
-module.exports = app;
+export default app;
