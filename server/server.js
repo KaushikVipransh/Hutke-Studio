@@ -10,14 +10,10 @@ dotenv.config();
 
 if (!process.env.MONGO_URI) {
   console.error("FATAL ERROR: MONGO_URI is not defined.");
-  console.error("Please create a .env file in the root directory with your MongoDB connection string.");
-  process.exit(1);
 }
 
 if (!process.env.JWT_SECRET) {
   console.error("FATAL ERROR: JWT_SECRET is not defined.");
-  console.error("Please add JWT_SECRET to your .env file.");
-  process.exit(1);
 }
 
 const app = express();
@@ -31,6 +27,11 @@ app.use(express.json());
 mongoose.connection.on('connected', () => console.log('Mongoose connected to DB Cluster'));
 mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err));
 mongoose.connection.on('disconnected', () => console.log('Mongoose disconnected'));
+
+// Health check endpoint to verify the server is up
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Backend is running" });
+});
 
 // Routes
 app.use('/api', registrationRoutes);
