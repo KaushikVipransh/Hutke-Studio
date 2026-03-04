@@ -1,87 +1,89 @@
-import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
-const slides = [
-  { url: "/images/pic1.webp", alt: "Dance performance 1" },
-  { url: "/images/pic2.webp", alt: "Dance performance 2" },
-  { url: "/images/pic3.webp", alt: "Dance performance 3" },
-  { url: "/images/pic4.webp", alt: "Dance performance 4" },
-  { url: "/images/pic5.webp", alt: "Dance performance 5" },
-  { url: "/images/pic6.webp", alt: "Dance performance 6" },
-  { url: "/images/pic7.webp", alt: "Dance performance 7" },
+const images = [
+  {
+    src: "/images/pic1.webp",
+    alt: "HDC Highlight 1",
+    className: "lg:col-span-2 lg:row-span-2",
+  },
+  {
+    src: "/images/pic2.webp",
+    alt: "HDC Highlight 2",
+    className: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    src: "/images/pic3.webp",
+    alt: "HDC Highlight 3",
+    className: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    src: "/images/pic4.webp",
+    alt: "HDC Highlight 4",
+    className: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    src: "/images/pic5.webp",
+    alt: "HDC Highlight 5",
+    className: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    src: "/images/pic6.webp",
+    alt: "HDC Highlight 6",
+    className: "lg:col-span-2 lg:row-span-1",
+  },
+  {
+    src: "/images/pic7.webp",
+    alt: "HDC Highlight 7",
+    className: "lg:col-span-2 lg:row-span-1",
+  },
 ];
 
 const Slideshow = () => {
-  const [current, setCurrent] = useState(0);
-
-  const next = useCallback(() => {
-    setCurrent((prev) => (prev + 1) % slides.length);
-  }, []);
-
-  const prev = () => {
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(next, 4000);
-    return () => clearInterval(timer);
-  }, [next]);
+    setIsVisible(true);
+  }, []);
 
   return (
-    <section id="slideshow" className="bg-background py-16 sm:py-24">
-      <div className="mx-auto max-w-5xl px-4">
-        <h2 className="mb-12 text-center font-display text-4xl tracking-wider text-foreground sm:text-5xl">
-          HDC 2024 Highlights
-        </h2>
+    <section id="slideshow" className="relative overflow-hidden bg-background py-20">
+      {/* Abstract Background Elements */}
+      <div className="pointer-events-none absolute -left-20 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-20 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
 
-        <div className="relative overflow-hidden rounded-lg">
-          {/* Slides */}
-          <div
-            className="flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${current * 100}%)` }}
-          >
-            {slides.map((slide, i) => (
+      <div className="container mx-auto px-4">
+        <div className="mb-12 text-center">
+          <h2 className="font-display text-4xl tracking-wider text-foreground text-glow sm:text-5xl">
+            Gallery
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Moments of passion, rhythm, and glory.
+          </p>
+        </div>
+
+        {/* Mosaic Grid */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:h-[600px] lg:grid-cols-4 lg:grid-rows-3">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className={cn(
+                "group relative overflow-hidden rounded-xl bg-muted shadow-lg transition-all duration-700 ease-out",
+                image.className,
+                isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+              )}
+              style={{ transitionDelay: `${index * 100}ms` }}
+            >
               <img
-                key={i}
-                src={slide.url}
-                alt={slide.alt}
-                className="aspect-video w-full flex-shrink-0 object-cover"
+                src={image.src}
+                alt={image.alt}
                 loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-            ))}
-          </div>
-
-          {/* Arrows */}
-          <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-background/60 p-2 text-foreground backdrop-blur transition-colors hover:bg-primary hover:text-primary-foreground"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-background/60 p-2 text-foreground backdrop-blur transition-colors hover:bg-primary hover:text-primary-foreground"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-
-          {/* Dots */}
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`h-2.5 w-2.5 rounded-full transition-all ${
-                  i === current
-                    ? "scale-125 bg-primary box-glow"
-                    : "bg-foreground/40 hover:bg-foreground/70"
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-purple-500/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </div>
+          ))}
         </div>
       </div>
     </section>

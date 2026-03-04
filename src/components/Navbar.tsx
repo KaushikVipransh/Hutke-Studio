@@ -18,27 +18,37 @@ const Navbar = () => {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? "bg-background/80 backdrop-blur-md border-b border-border py-2"
-          : "bg-transparent py-4"
+          : "bg-transparent py-3"
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src="/hutke-logo.png" alt="Hutke Studios Logo" className="h-10 w-10 object-contain" />
-          <span className="font-display text-lg font-bold tracking-wider text-foreground uppercase">
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/hutke-logo.png" alt="Hutke Studios Logo" className="h-8 w-8 object-contain" />
+          <span className="font-display text-base font-bold tracking-wider text-foreground uppercase">
             Hutke Dance Studio
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <a
             href="#about-hdc"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById("about-hdc")?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="text-m font-medium uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary"
+            className="text-sm font-medium uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary"
           >
             About HDC
+          </a>
+          <a
+            href="#slideshow"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("slideshow")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="text-sm font-medium uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary"
+          >
+            Gallery
           </a>
         </div>
       </div>
