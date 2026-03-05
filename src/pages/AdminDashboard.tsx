@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Search, Copy, LogOut, Download } from "lucide-react";
+import { Search, Copy, LogOut, Download, Check, X, PauseCircle, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // 1. Data Types and Enums
@@ -288,15 +288,15 @@ const AdminDashboard = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px]">Team Name</TableHead>
-                    <TableHead>Division</TableHead>
-                    <TableHead>POC</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead className="text-center">Members</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                    <TableHead>Submitted</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="w-[180px] px-2">Team Name</TableHead>
+                    <TableHead className="px-2">Division</TableHead>
+                    <TableHead className="px-2">POC</TableHead>
+                    <TableHead className="px-2">Email</TableHead>
+                    <TableHead className="px-2">Contact</TableHead>
+                    <TableHead className="text-center px-2">Members</TableHead>
+                    <TableHead className="text-center px-2">Status</TableHead>
+                    <TableHead className="px-2">Submitted</TableHead>
+                    <TableHead className="text-right px-2">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -309,12 +309,12 @@ const AdminDashboard = () => {
                   ) : filteredSubmissions.length > 0 ? (
                     filteredSubmissions.map((sub) => (
                       <TableRow key={sub.id}>
-                        <TableCell className="font-medium">{sub.teamName}</TableCell>
-                        <TableCell className="text-muted-foreground">{sub.division}</TableCell>
-                        <TableCell className="text-muted-foreground">{sub.pocName}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <span className="truncate max-w-[150px]" title={sub.email}>
+                        <TableCell className="font-medium px-2">{sub.teamName}</TableCell>
+                        <TableCell className="text-muted-foreground px-2 max-w-[140px] whitespace-normal text-xs">{sub.division}</TableCell>
+                        <TableCell className="text-muted-foreground px-2">{sub.pocName}</TableCell>
+                        <TableCell className="px-2">
+                          <div className="flex items-center gap-1">
+                            <span className="truncate max-w-[120px]" title={sub.email}>
                               {sub.email}
                             </span>
                             <Button
@@ -327,8 +327,8 @@ const AdminDashboard = () => {
                             </Button>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
+                        <TableCell className="px-2">
+                          <div className="flex items-center gap-1">
                             <span className="whitespace-nowrap">{sub.contactNo}</span>
                             <Button
                               variant="ghost"
@@ -340,8 +340,8 @@ const AdminDashboard = () => {
                             </Button>
                           </div>
                         </TableCell>
-                        <TableCell className="text-center text-muted-foreground">{sub.memberCount}</TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="text-center text-muted-foreground px-2">{sub.memberCount}</TableCell>
+                        <TableCell className="text-center px-2">
                           <Badge
                             variant="outline"
                             className={statusBadgeConfig[sub.status]?.className}
@@ -349,41 +349,44 @@ const AdminDashboard = () => {
                             {statusBadgeConfig[sub.status]?.text || sub.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="text-muted-foreground px-2">
                           {new Date(sub.createdAt).toLocaleDateString()}
                         </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button asChild variant="outline" size="sm">
+                        <TableCell className="text-right px-2">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button asChild variant="ghost" size="icon" className="h-8 w-8" title="Watch Audition">
                               <a href={sub.videoUrl} target="_blank" rel="noopener noreferrer">
-                                Watch Audition
+                                <Play className="h-4 w-4" />
                               </a>
                             </Button>
                             {sub.status === SubmissionStatus.Pending && (
                               <>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
-                                  className="text-green-400 hover:bg-green-500/10 hover:text-green-300"
+                                  size="icon"
+                                  className="h-8 w-8 text-green-400 hover:bg-green-500/10 hover:text-green-300"
                                   onClick={() => handleStatusUpdate(sub.id, SubmissionStatus.Approved)}
+                                  title="Approve"
                                 >
-                                  Approve
+                                  <Check className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
-                                  className="text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                                  size="icon"
+                                  className="h-8 w-8 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
                                   onClick={() => handleStatusUpdate(sub.id, SubmissionStatus.StandBy)}
+                                  title="Stand By"
                                 >
-                                  Stand By
+                                  <PauseCircle className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
-                                  className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-400 hover:bg-red-500/10 hover:text-red-300"
                                   onClick={() => handleStatusUpdate(sub.id, SubmissionStatus.Rejected)}
+                                  title="Reject"
                                 >
-                                  Reject
+                                  <X className="h-4 w-4" />
                                 </Button>
                               </>
                             )}
@@ -391,19 +394,21 @@ const AdminDashboard = () => {
                               <>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
-                                  className="text-green-400 hover:bg-green-500/10 hover:text-green-300"
+                                  size="icon"
+                                  className="h-8 w-8 text-green-400 hover:bg-green-500/10 hover:text-green-300"
                                   onClick={() => handleStatusUpdate(sub.id, SubmissionStatus.Approved)}
+                                  title="Approve"
                                 >
-                                  Approve
+                                  <Check className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
-                                  className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-400 hover:bg-red-500/10 hover:text-red-300"
                                   onClick={() => handleStatusUpdate(sub.id, SubmissionStatus.Rejected)}
+                                  title="Reject"
                                 >
-                                  Reject
+                                  <X className="h-4 w-4" />
                                 </Button>
                               </>
                             )}
