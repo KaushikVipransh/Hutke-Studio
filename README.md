@@ -46,8 +46,6 @@ This project is built with:
 This project is live on vercel.
 https://hutke-studio.vercel.app/
 
-1.  Build the project for production:
-    ```sh
     npm run build
     ```
 2.  Deploy the `dist` folder to your hosting provider.
