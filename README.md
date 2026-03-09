@@ -1,4 +1,4 @@
-# Dance Dash Neon
+#Hutke-Studio
 
 This project is for the Hutke Dance Championship website.
 
@@ -43,10 +43,5 @@ This project is built with:
 
 ## Deployment
 
-You can deploy this project to any static site hosting service like Vercel, Netlify, or GitHub Pages.
-
-1.  Build the project for production:
-    ```sh
-    npm run build
-    ```
-2.  Deploy the `dist` folder to your hosting provider.
+This project is live on vercel.
+https://hutke-studio.vercel.app/
