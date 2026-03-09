@@ -16,7 +16,9 @@ const teamSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    lowercase: true,
+    trim: true
   },
   contactNo: {
     type: String,
@@ -59,5 +61,8 @@ const teamSchema = new mongoose.Schema({
     default: 'PENDING'
   }
 }, { timestamps: true });
+
+// Create a compound unique index on email and division to prevent duplicate registrations
+teamSchema.index({ email: 1, division: 1 }, { unique: true });
 
 export default mongoose.model('Team', teamSchema);

@@ -106,6 +106,11 @@ const RegistrationForm = () => {
       ...(isCollege && { collegeName: values.collegeName }),
     };
 
+    toast({
+      title: "Submitting...",
+      description: "Please wait while we process your registration.",
+    });
+
     try {
       await api.post("/register", payload);
 
