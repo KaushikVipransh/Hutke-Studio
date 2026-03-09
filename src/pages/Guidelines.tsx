@@ -18,10 +18,9 @@ const Guidelines = () => {
   };
 
   const collegeRules = [
-    "The stage limit is minimum 5 & maximum 15 members.",
+    "The team size must be between 5 and 25 members.",
     "The time limit for prelims is 3 to 5 minutes. Exceeding the time frame will lead to negative marking.",
     "Any kind of editing or sound effects will not be accepted.",
-    "The maximum team size limit is 25 members.",
     "The decision of the judges will be final and binding.",
   ];
 
@@ -29,6 +28,12 @@ const Guidelines = () => {
     "The time limit for prelims is 2 to 4 minutes. Exceeding the time frame will lead to negative marking.",
     "Any kind of editing or sound effects will not be accepted.",
     "The minimum team size limit is 3 and maximum team size limit is 30 members.",
+    "The decision of the judges will be final and binding.",
+  ];
+
+  const soloRules = [
+    "Time Limit: 1 to 2 minutes. Exceeding the time frame will lead to negative marking.",
+    "Video Rules: No editing or sound effects allowed.",
     "The decision of the judges will be final and binding.",
   ];
 
@@ -49,7 +54,7 @@ const Guidelines = () => {
           </AlertDescription>
         </Alert>
 
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           <Card className="bg-background/80 backdrop-blur-md">
             <CardHeader>
               <CardTitle className="font-display text-2xl tracking-wider">
@@ -75,6 +80,21 @@ const Guidelines = () => {
               <ul className="list-disc space-y-3 pl-5 text-muted-foreground">
                 {crewRules.map((rule, index) => (
                   <li key={`crew-rule-${index}`}>{rule}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-background/80 backdrop-blur-md">
+            <CardHeader>
+              <CardTitle className="font-display text-2xl tracking-wider">
+                Solo Division
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc space-y-3 pl-5 text-muted-foreground">
+                {soloRules.map((rule, index) => (
+                  <li key={`solo-rule-${index}`}>{rule}</li>
                 ))}
               </ul>
             </CardContent>

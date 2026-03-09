@@ -27,6 +27,7 @@ enum SubmissionStatus {
 enum Division {
   College = "Inter College Group Dance",
   Crew = "Open Crew Group Dance",
+  Solo = "Inter State Solo Dance Competition",
 }
 
 interface Submission {
@@ -41,6 +42,7 @@ interface Submission {
   email: string;
   contactNo: string;
   collegeName?: string;
+  city?: string;
 }
 
 // 3. Helper for status badges styling
@@ -66,6 +68,7 @@ const statusBadgeConfig = {
 const AdminDashboard = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | "ALL">("ALL");
+  const [divisionFilter, setDivisionFilter] = useState<Division | "ALL">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -94,7 +97,7 @@ const AdminDashboard = () => {
       }
     };
     fetchSubmissions();
-  }, [toast]);
+  }, []);
 
   // 4. Function for API call to update status
   const handleStatusUpdate = async (id: string, newStatus: SubmissionStatus) => {
@@ -128,6 +131,7 @@ const AdminDashboard = () => {
   const filteredSubmissions = useMemo(() => {
     return submissions
       .filter((sub) => statusFilter === "ALL" || sub.status === statusFilter)
+      .filter((sub) => divisionFilter === "ALL" || sub.division === divisionFilter)
       .filter((sub) => {
         const query = searchQuery.toLowerCase();
         return (
@@ -137,7 +141,7 @@ const AdminDashboard = () => {
           (sub.contactNo?.toLowerCase() || "").includes(query)
         );
       });
-  }, [submissions, statusFilter, searchQuery]);
+  }, [submissions, statusFilter, divisionFilter, searchQuery]);
 
   const filterOptions: (SubmissionStatus | "ALL")[] = [
     "ALL",
@@ -178,12 +182,13 @@ const AdminDashboard = () => {
     }
 
     const headers = [
-      "Team/College Name",
+      "Team/Participant Name",
       "Division",
       "POC Name",
       "Email",
       "Contact Number",
       "Member Count",
+      "City",
       "Video URL",
       "Submission Date",
     ];
@@ -199,6 +204,7 @@ const AdminDashboard = () => {
           `"${sub.email}"`,
           `"${sub.contactNo}"`,
           sub.memberCount,
+          `"${sub.city || ""}"`,
           `"${sub.videoUrl}"`,
           `"${new Date(sub.createdAt).toLocaleDateString()}"`,
         ].join(",");
@@ -246,6 +252,7 @@ const AdminDashboard = () => {
           <CardHeader>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               {/* Filter Bar */}
+            <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 overflow-x-auto pb-2">
                 {filterOptions.map((option) => (
                   <Button
@@ -257,6 +264,26 @@ const AdminDashboard = () => {
                     {option.toLowerCase()}
                   </Button>
                 ))}
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                <Button
+                  variant={divisionFilter === "ALL" ? "default" : "outline"}
+                  onClick={() => setDivisionFilter("ALL")}
+                  className="whitespace-nowrap"
+                >
+                  All Divisions
+                </Button>
+                {Object.values(Division).map((div) => (
+                  <Button
+                    key={div}
+                    variant={divisionFilter === div ? "default" : "outline"}
+                    onClick={() => setDivisionFilter(div)}
+                    className="whitespace-nowrap"
+                  >
+                    {div === Division.Solo ? "Solo" : div === Division.College ? "College" : "Crew"}
+                  </Button>
+                ))}
+              </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -288,7 +315,7 @@ const AdminDashboard = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[180px] px-2">Team Name</TableHead>
+                  <TableHead className="w-[180px] px-2">Team / Participant</TableHead>
                     <TableHead className="px-2">Division</TableHead>
                     <TableHead className="px-2">POC</TableHead>
                     <TableHead className="px-2">Email</TableHead>

@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -23,45 +22,61 @@ import api from "@/lib/api";
 const DIVISIONS = {
   COLLEGE: "Inter College Group Dance",
   CREW: "Open Crew Group Dance",
+  SOLO: "Inter State Solo Dance Competition",
 } as const;
 
 // Define division options
 const DIVISION_OPTIONS = [
   { label: DIVISIONS.COLLEGE, value: DIVISIONS.COLLEGE },
   { label: DIVISIONS.CREW, value: DIVISIONS.CREW },
+  { label: DIVISIONS.SOLO, value: DIVISIONS.SOLO },
 ] as const;
 
 // Zod schema for validation, including conditional checks
 const formSchema = z
   .object({
-    division: z.enum([DIVISIONS.COLLEGE, DIVISIONS.CREW]),
+    division: z.enum([DIVISIONS.COLLEGE, DIVISIONS.CREW, DIVISIONS.SOLO]),
     collegeName: z.string().optional(),
-    teamName: z.string().min(2, "Team name must be at least 2 characters."),
-    memberCount: z.coerce.number().min(3, "A team must have at least 3 members."),
-    pocName: z.string().min(2, "POC name is required."),
+    city: z.string().optional(),
+    teamName: z.string().min(2, "Name must be at least 2 characters."),
+    memberCount: z.coerce.number().optional(),
+    pocName: z.string().optional(),
     email: z.string().email("Please enter a valid email address."),
     contactNo: z.string().min(10, "Please enter a valid contact number."),
     videoUrl: z.string().url("Please enter a valid URL for your video."),
   })
   .superRefine((data, ctx) => {
-    if (data.division === DIVISIONS.COLLEGE && (!data.collegeName || data.collegeName.trim().length < 2)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "College Name is required for this division.",
-        path: ["collegeName"],
-      });
+    if (data.division === DIVISIONS.COLLEGE) {
+      if (!data.collegeName || data.collegeName.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "College Name is required.", path: ["collegeName"] });
+      }
+      if (data.memberCount === undefined || data.memberCount < 5 || data.memberCount > 25) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Team must have 5-25 members.", path: ["memberCount"] });
+      }
+      if (!data.pocName || data.pocName.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "POC name is required.", path: ["pocName"] });
+      }
+    } else if (data.division === DIVISIONS.CREW) {
+      if (data.memberCount === undefined || data.memberCount < 3 || data.memberCount > 30) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Team must have 3-30 members.", path: ["memberCount"] });
+      }
+      if (!data.pocName || data.pocName.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "POC name is required.", path: ["pocName"] });
+      }
+    } else if (data.division === DIVISIONS.SOLO) {
+      if (!data.city || data.city.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "City is required.", path: ["city"] });
+      }
     }
   });
 
 const RegistrationForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       division: DIVISIONS.COLLEGE,
       teamName: "",
       collegeName: "",
-      memberCount: 3,
       pocName: "",
       email: "",
       contactNo: "",
@@ -71,15 +86,25 @@ const RegistrationForm = () => {
 
   // Watch the 'division' field to conditionally render inputs
   const selectedDivision = form.watch("division");
+  const { formState: { isSubmitting } } = form;
+  const isSolo = selectedDivision === DIVISIONS.SOLO;
+  const isCollege = selectedDivision === DIVISIONS.COLLEGE;
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    // Clean up the payload to remove irrelevant conditional fields before submission
-    const payload = { ...values };
-    if (payload.division === DIVISIONS.CREW) {
-      delete payload.collegeName;
-    }
+    
+    // Prepare payload based on division
+    const payload = {
+      division: values.division,
+      teamName: values.teamName,
+      email: values.email,
+      contactNo: values.contactNo,
+      videoUrl: values.videoUrl,
+      pocName: isSolo ? values.teamName : values.pocName,
+      memberCount: isSolo ? 1 : values.memberCount,
+      ...(isSolo && { city: values.city }),
+      ...(isCollege && { collegeName: values.collegeName }),
+    };
 
     try {
       await api.post("/register", payload);
@@ -112,8 +137,6 @@ const RegistrationForm = () => {
         title: "Registration Failed",
         description: errorMessage,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -153,64 +176,84 @@ const RegistrationForm = () => {
               )}
             />
 
-            {/* Conditional Fields */}
-            {selectedDivision === DIVISIONS.COLLEGE && (
-              <FormField
-                control={form.control}
-                name="collegeName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>College Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. St. Xavier's College" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {/* Standard Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <FormField
                 control={form.control}
                 name="teamName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Team Name</FormLabel>
+                    <FormLabel>{isSolo ? "Participant Name" : "Team Name"}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your awesome team name" {...field} />
+                      <Input placeholder={isSolo ? "Enter your full name" : "Your awesome team name"} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="memberCount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>No of Members</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="3" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="pocName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>POC Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Point of Contact Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+              {isCollege && (
+                <FormField
+                  control={form.control}
+                  name="collegeName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>College Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. St. Xavier's College" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {isSolo && (
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your city" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {!isSolo && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="memberCount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>No of Members</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pocName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>POC Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Point of Contact Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
               <FormField
                 control={form.control}
                 name="email"

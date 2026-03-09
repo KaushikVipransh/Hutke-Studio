@@ -4,7 +4,7 @@ const teamSchema = new mongoose.Schema({
   division: {
     type: String,
     required: true,
-    enum: ['Inter College Group Dance', 'Open Crew Group Dance']
+    enum: ['Inter College Group Dance', 'Open Crew Group Dance', 'Inter State Solo Dance Competition']
   },
   teamName: {
     type: String,
@@ -32,18 +32,26 @@ const teamSchema = new mongoose.Schema({
       return this.division === 'Inter College Group Dance';
     }
   },
+  city: {
+    type: String,
+    required: function() {
+      return this.division === 'Inter State Solo Dance Competition';
+    }
+  },
   memberCount: {
     type: Number,
     required: true,
-    min: [3, 'Minimum 3 members required'],
-    validate: {
-      validator: function(v) {
-        if (this.division === 'Inter College Group Dance' && v > 25) return false;
-        if (this.division === 'Open Crew Group Dance' && v > 30) return false;
-        return true;
-      },
-      message: 'Member count exceeds the limit for the selected division (College: 25, Crew: 30).'
-    }
+    validate: [
+      {
+        validator: function(v) {
+          if (this.division === 'Inter College Group Dance') return v >= 5 && v <= 25;
+          if (this.division === 'Open Crew Group Dance') return v >= 3 && v <= 30;
+          if (this.division === 'Inter State Solo Dance Competition') return v === 1;
+          return false;
+        },
+        message: props => `Member count of ${props.value} is invalid for division "${this.division}". College requires 5-25, Crew 3-30, and Solo must be 1.`
+      }
+    ]
   },
   status: {
     type: String,
