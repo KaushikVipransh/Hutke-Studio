@@ -28,6 +28,7 @@ enum Division {
   College = "Inter College Group Dance",
   Crew = "Open Crew Group Dance",
   Solo = "Inter State Solo Dance Competition",
+  Folk = "Inter State Folk Dance Competition",
 }
 
 interface Submission {
@@ -280,7 +281,13 @@ const AdminDashboard = () => {
                     onClick={() => setDivisionFilter(div)}
                     className="whitespace-nowrap"
                   >
-                    {div === Division.Solo ? "Solo" : div === Division.College ? "College" : "Crew"}
+                    {div === Division.Solo
+                      ? "Solo"
+                      : div === Division.College
+                      ? "College"
+                      : div === Division.Folk
+                      ? "Folk"
+                      : "Crew"}
                   </Button>
                 ))}
               </div>

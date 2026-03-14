@@ -37,6 +37,15 @@ const Guidelines = () => {
     "The decision of the judges will be final and binding.",
   ];
 
+  const folkRules = [
+    "Video Prelims: Free of Cost.",
+    "Stage Limit: Minimum 5 & Maximum 15 members.",
+    "Time Limit: 2 to 5 minutes (Negative marking for exceeding).",
+    "Team Size Limit: Minimum 3 & Maximum 25 members.",
+    "Video Rules: No editing or sound effects.",
+    "Finality: Judge's decision is final and binding.",
+  ];
+
   return (
     <main className="container mx-auto px-4 pt-24 pb-12 sm:pt-32">
       <div className="mx-auto max-w-4xl">
@@ -54,7 +63,7 @@ const Guidelines = () => {
           </AlertDescription>
         </Alert>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-2">
           <Card className="bg-background/80 backdrop-blur-md">
             <CardHeader>
               <CardTitle className="font-display text-2xl tracking-wider">
@@ -95,6 +104,21 @@ const Guidelines = () => {
               <ul className="list-disc space-y-3 pl-5 text-muted-foreground">
                 {soloRules.map((rule, index) => (
                   <li key={`solo-rule-${index}`}>{rule}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-background/80 backdrop-blur-md">
+            <CardHeader>
+              <CardTitle className="font-display text-2xl tracking-wider">
+                Inter State Folk Dance Competition
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc space-y-3 pl-5 text-muted-foreground">
+                {folkRules.map((rule, index) => (
+                  <li key={`folk-rule-${index}`}>{rule}</li>
                 ))}
               </ul>
             </CardContent>

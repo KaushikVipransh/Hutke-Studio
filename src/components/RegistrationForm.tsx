@@ -23,6 +23,7 @@ const DIVISIONS = {
   COLLEGE: "Inter College Group Dance",
   CREW: "Open Crew Group Dance",
   SOLO: "Inter State Solo Dance Competition",
+  FOLK: "Inter State Folk Dance Competition",
 } as const;
 
 // Define division options
@@ -30,12 +31,13 @@ const DIVISION_OPTIONS = [
   { label: DIVISIONS.COLLEGE, value: DIVISIONS.COLLEGE },
   { label: DIVISIONS.CREW, value: DIVISIONS.CREW },
   { label: DIVISIONS.SOLO, value: DIVISIONS.SOLO },
+  { label: DIVISIONS.FOLK, value: DIVISIONS.FOLK },
 ] as const;
 
 // Zod schema for validation, including conditional checks
 const formSchema = z
   .object({
-    division: z.enum([DIVISIONS.COLLEGE, DIVISIONS.CREW, DIVISIONS.SOLO]),
+    division: z.enum([DIVISIONS.COLLEGE, DIVISIONS.CREW, DIVISIONS.SOLO, DIVISIONS.FOLK]),
     collegeName: z.string().optional(),
     city: z.string().optional(),
     teamName: z.string().min(2, "Name must be at least 2 characters."),
@@ -66,6 +68,13 @@ const formSchema = z
     } else if (data.division === DIVISIONS.SOLO) {
       if (!data.city || data.city.trim().length < 2) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "City is required.", path: ["city"] });
+      }
+    } else if (data.division === DIVISIONS.FOLK) {
+      if (data.memberCount === undefined || data.memberCount < 3 || data.memberCount > 25) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Team must have 3-25 members.", path: ["memberCount"] });
+      }
+      if (!data.pocName || data.pocName.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "POC name is required.", path: ["pocName"] });
       }
     }
   });
